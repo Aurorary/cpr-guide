@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
     <!-- Chosen Palette: Calm Harmony -->
     <!-- Application Structure Plan: The SPA is designed as a task-oriented interactive guide, not a linear document. A top navigation bar allows users to jump to the five core CPR steps (Check, Call, Compress, Breathe, AED). The most critical interaction is a prominent "Adult/Child/Infant" selector within the 'Compress & Breathe' section. Clicking a patient type dynamically updates the instructions, stat cards, and diagrams shown. This structure was chosen because a real-world use case or learning session requires quick access to specific, context-sensitive information, which a linear document cannot provide efficiently. The goal is to reduce cognitive load and speed up information retrieval. The app also includes interactive elements like a compression metronome and a comparative chart to enhance learning and retention. -->
     <!-- Visualization & Content Choices: 
@@ -17,61 +18,6 @@
         - Comparison of Techniques: Goal: Compare/Synthesize. Method: Horizontal Bar Chart. Interaction: Hover tooltips provide details. Justification: Offers a quick visual summary of the key differences across patient types, aiding comprehension. Library: Chart.js.
         - Important Notes (AED, etc.): Goal: Inform. Method: Collapsible accordion sections. Interaction: Click to expand/collapse. Justification: Keeps secondary information accessible without cluttering the primary interface. Library: JS.
         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #F8F7F4;
-            color: #333;
-        }
-        .nav-button {
-            transition: all 0.3s ease;
-            border-bottom: 2px solid transparent;
-        }
-        .nav-button.active, .nav-button:hover {
-            border-bottom-color: #E57373;
-            color: #1a202c;
-        }
-        .patient-selector-btn {
-            transition: all 0.3s ease;
-        }
-        .patient-selector-btn.active {
-            background-color: #4A90E2;
-            color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .stat-card {
-            background-color: white;
-            border-left: 5px solid #4A90E2;
-        }
-        .metronome-pulse {
-            width: 50px;
-            height: 50px;
-            background-color: #E57373;
-            border-radius: 50%;
-            animation: pulse 0.5s infinite alternate ease-in-out;
-            transform: scale(0.8);
-        }
-        @keyframes pulse {
-            to {
-                transform: scale(1);
-                opacity: 0.7;
-            }
-        }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 350px;
-            max-height: 400px;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 400px;
-            }
-        }
-    </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
 

@@ -1,0 +1,65 @@
+/* CPR Guide Styles */
+/* Chosen Palette: Calm Harmony */
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #F8F7F4;
+    color: #333;
+}
+
+.nav-button {
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-button.active, .nav-button:hover {
+    border-bottom-color: #E57373;
+    color: #1a202c;
+}
+
+.patient-selector-btn {
+    transition: all 0.3s ease;
+}
+
+.patient-selector-btn.active {
+    background-color: #4A90E2;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card {
+    background-color: white;
+    border-left: 5px solid #4A90E2;
+}
+
+.metronome-pulse {
+    width: 50px;
+    height: 50px;
+    background-color: #E57373;
+    border-radius: 50%;
+    animation: pulse 0.5s infinite alternate ease-in-out;
+    transform: scale(0.8);
+}
+
+@keyframes pulse {
+    to {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 350px;
+    max-height: 400px;
+}
+
+@media (min-width: 768px) {
+    .chart-container {
+        height: 400px;
+    }
+} 
