@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive CPR Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The SPA is designed as a task-oriented interactive guide, not a linear document. A top navigation bar allows users to jump to the five core CPR steps (Check, Call, Compress, Breathe, AED). The most critical interaction is a prominent "Adult/Child/Infant" selector within the 'Compress & Breathe' section. Clicking a patient type dynamically updates the instructions, stat cards, and diagrams shown. This structure was chosen because a real-world use case or learning session requires quick access to specific, context-sensitive information, which a linear document cannot provide efficiently. The goal is to reduce cognitive load and speed up information retrieval. The app also includes interactive elements like a compression metronome and a comparative chart to enhance learning and retention. -->
+    <!-- Visualization & Content Choices: 
+        - CPR Steps (Check, Call, Compress...): Goal: Organize. Method: Clickable HTML/CSS process flow diagram. Interaction: Smooth scroll to section. Justification: Provides a clear overview and primary navigation. Library: HTML/CSS/JS.
+        - Adult vs. Child vs. Infant Procedures: Goal: Compare/Inform. Method: Dynamic content blocks. Interaction: Click buttons to show/hide relevant instructions. Justification: This is the most critical interaction, making it easy to find the correct procedure without scrolling through irrelevant text. Library: JS.
+        - Key Metrics (Depth, Rate): Goal: Inform. Method: Prominently styled "stat cards". Interaction: Static display. Justification: Highlights the most critical numbers for quick recall. Library: HTML/CSS (Tailwind).
+        - Compression Rate (100-120/min): Goal: Inform/Engage. Method: Interactive metronome pulse. Interaction: User clicks button to start/stop a visual pulse at the correct rhythm. Justification: Makes the abstract tempo tangible. Library: JS.
+        - Comparison of Techniques: Goal: Compare/Synthesize. Method: Horizontal Bar Chart. Interaction: Hover tooltips provide details. Justification: Offers a quick visual summary of the key differences across patient types, aiding comprehension. Library: Chart.js.
+        - Important Notes (AED, etc.): Goal: Inform. Method: Collapsible accordion sections. Interaction: Click to expand/collapse. Justification: Keeps secondary information accessible without cluttering the primary interface. Library: JS.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #333;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-button.active, .nav-button:hover {
+            border-bottom-color: #E57373;
+            color: #1a202c;
+        }
+        .patient-selector-btn {
+            transition: all 0.3s ease;
+        }
+        .patient-selector-btn.active {
+            background-color: #4A90E2;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .stat-card {
+            background-color: white;
+            border-left: 5px solid #4A90E2;
+        }
+        .metronome-pulse {
+            width: 50px;
+            height: 50px;
+            background-color: #E57373;
+            border-radius: 50%;
+            animation: pulse 0.5s infinite alternate ease-in-out;
+            transform: scale(0.8);
+        }
+        @keyframes pulse {
+            to {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900">Interactive CPR Guide</h1>
+            <p class="text-lg text-gray-600 mt-2">A quick, visual guide to life-saving techniques.</p>
+            <div class="mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md" role="alert">
+                <p class="font-bold">Disclaimer</p>
+                <p>This is a basic overview and **not a substitute for formal training.** Always seek certification from organizations like the American Heart Association (AHA) or the Red Cross.</p>
+            </div>
+        </header>
+
+        <nav class="sticky top-0 bg-white/80 backdrop-blur-sm z-10 shadow-md rounded-lg mb-8">
+            <div class="flex justify-center items-center p-2 space-x-2 md:space-x-8 text-sm md:text-base font-medium text-gray-600">
+                <button onclick="scrollToSection('check')" class="nav-button p-2">1. Check</button>
+                <button onclick="scrollToSection('call')" class="nav-button p-2">2. Call</button>
+                <button onclick="scrollToSection('compress')" class="nav-button p-2">3. Compress & Breathe</button>
+                <button onclick="scrollToSection('aed')" class="nav-button p-2">4. Use AED</button>
+                <button onclick="scrollToSection('summary')" class="nav-button p-2">5. Summary</button>
+            </div>
+        </nav>
+
+        <main class="space-y-12">
+            <section id="check">
+                <h2 class="text-3xl font-bold mb-4 text-center">Step 1: Check the Scene & Person</h2>
+                <div class="text-center text-gray-700 mb-6 max-w-3xl mx-auto">
+                    <p>This initial step is crucial to ensure your safety and to quickly determine if the person needs help. Before rushing to assist, take a moment to assess the situation. Your safety is the priority.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="font-bold text-xl mb-2 text-blue-600">Ensure Scene Safety</h3>
+                        <p>Look around for any dangers like traffic, fire, or electrical wires. Only proceed if the area is safe for you and the victim.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="font-bold text-xl mb-2 text-blue-600">Check for Responsiveness</h3>
+                        <p>Tap the person's shoulder firmly and shout, <span class="font-semibold">"Are you okay?"</span> If they don't respond, they need help immediately.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow md:col-span-2">
+                        <h3 class="font-bold text-xl mb-2 text-blue-600">Check for Breathing</h3>
+                        <p>Scan the chest for rise and fall for 5-10 seconds. Note that occasional agonal gasps (irregular, noisy gasps) are <span class="font-semibold">not normal breathing</span> and are a sign of cardiac arrest.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="call">
+                <h2 class="text-3xl font-bold mb-4 text-center">Step 2: Call for Help</h2>
+                <div class="text-center text-gray-700 mb-6 max-w-3xl mx-auto">
+                    <p>Activating the emergency response system is one of the most important things you can do. This brings professional help and vital equipment, like an AED, to the scene as quickly as possible.</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+                    <h3 class="text-2xl font-bold text-red-600">Call 911 Immediately</h3>
+                    <p class="mt-2 text-lg">If the person is unresponsive and not breathing normally, call your local emergency number.</p>
+                    <p class="mt-2">If others are present, point to a specific person and tell them: <span class="font-semibold">"You, call 911 and get an AED!"</span></p>
+                    <p class="mt-2">If you are alone, use your phone's speakerphone to talk to the dispatcher while you begin CPR.</p>
+                </div>
+            </section>
+
+            <section id="compress">
+                <h2 class="text-3xl font-bold mb-4 text-center">Step 3: Compressions & Rescue Breaths</h2>
+                <div class="text-center text-gray-700 mb-6 max-w-3xl mx-auto">
+                    <p>This is the core of CPR. High-quality chest compressions circulate oxygen-rich blood to the brain and other vital organs. The technique varies by age, so select the correct patient type below to see the specific instructions.</p>
+                </div>
+
+                <div class="flex justify-center space-x-2 md:space-x-4 mb-8">
+                    <button id="btn-adult" class="patient-selector-btn py-2 px-4 md:py-3 md:px-6 rounded-lg font-semibold bg-white shadow-sm" onclick="selectPatient('adult')">Adult</button>
+                    <button id="btn-child" class="patient-selector-btn py-2 px-4 md:py-3 md:px-6 rounded-lg font-semibold bg-white shadow-sm" onclick="selectPatient('child')">Child</button>
+                    <button id="btn-infant" class="patient-selector-btn py-2 px-4 md:py-3 md:px-6 rounded-lg font-semibold bg-white shadow-sm" onclick="selectPatient('infant')">Infant</button>
+                </div>
+                
+                <div id="content-adult" class="patient-content hidden">
+                    <div class="grid md:grid-cols-3 gap-4 text-center mb-6">
+                        <div class="stat-card p-4 rounded-lg shadow-md"><p class="text-lg font-semibold">Rate</p><p class="text-2xl font-bold">100-120</p><p>per minute</p></div>
+                        <div class="stat-card p-4 rounded-lg shadow-md"><p class="text-lg font-semibold">Depth</p><p class="text-2xl font-bold">At least 2"</p><p>(5 cm)</p></div>
+                        <div class="stat-card p-4 rounded-lg shadow-md"><p class="text-lg font-semibold">Ratio</p><p class="text-2xl font-bold">30 : 2</p><p>Compressions to Breaths</p></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="font-bold text-xl mb-3">Technique for Adults</h3>
+                        <p class="mb-2"><span class="font-semibold">Hand Placement:</span> Heel of one hand on the center of the chest (lower half of breastbone). Place other hand on top.</p>
+                        <p class="mb-2"><span class="font-semibold">Body Position:</span> Shoulders directly over hands with straight arms.</p>
+                        <p class="mb-2"><span class="font-semibold">Action:</span> Push hard, push fast. Allow the chest to recoil completely after each push.</p>
+                        <p><span class="font-semibold">Rescue Breaths:</span> After 30 compressions, tilt head back, lift chin, pinch nose, and give 2 breaths (1 second each), watching for chest rise.</p>
+                    </div>
+                </div>
+
+                <div id="content-child" class="patient-content hidden">
+                     <div class="grid md:grid-cols-3 gap-4 text-center mb-6">
+                        <div class="stat-card p-4 rounded-lg shadow-md"><p class="text-lg font-semibold">Rate</p><p class="text-2xl font-bold">100-120</p><p>per minute</p></div>
+                        <div class="stat-card p-4 rounded-lg shadow-md"><p class="text-lg font-semibold">Depth</p><p class="text-2xl font-bold">About 2"</p><p>(5 cm or 1/3 chest depth)</p></div>
+                        <div class="stat-card p-4 rounded-lg shadow-md"><p class="text-lg font-semibold">Ratio</p><p class="text-2xl font-bold">30 : 2</p><p>Compressions to Breaths</p></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="font-bold text-xl mb-3">Technique for Children (1 yr to puberty)</h3>
+                        <p class="mb-2"><span class="font-semibold">Hand Placement:</span> Heel of one hand on the center of the chest. Use two hands if needed for larger children.</p>
+                        <p class="mb-2"><span class="font-semibold">Action:</span> Push hard, push fast. Allow full chest recoil.</p>
+                        <p><span class="font-semibold">Rescue Breaths:</span> Same as adult: after 30 compressions, give 2 breaths, watching for chest rise.</p>
+                    </div>
+                </div>
+
+                <div id="content-infant" class="patient-content hidden">
+                    <div class="grid md:grid-cols-3 gap-4 text-center mb-6">
+                        <div class="stat-card p-4 rounded-lg shadow-md"><p class="text-lg font-semibold">Rate</p><p class="text-2xl font-bold">100-120</p><p>per minute</p></div>
+                        <div class="stat-card p-4 rounded-lg shadow-md"><p class="text-lg font-semibold">Depth</p><p class="text-2xl font-bold">About 1.5"</p><p>(4 cm or 1/3 chest depth)</p></div>
+                        <div class="stat-card p-4 rounded-lg shadow-md"><p class="text-lg font-semibold">Ratio</p><p class="text-2xl font-bold">30 : 2</p><p>Compressions to Breaths</p></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="font-bold text-xl mb-3">Technique for Infants (&lt; 1 year)</h3>
+                        <p class="mb-2"><span class="font-semibold">Hand Placement:</span> Two fingers in the center of the chest, just below the nipple line.</p>
+                        <p class="mb-2"><span class="font-semibold">Action:</span> Push hard, push fast. Use the strength of your fingers.</p>
+                        <p><span class="font-semibold">Rescue Breaths:</span> After 30 compressions, tilt head to neutral position, cover the infant's mouth AND nose with your mouth, and give 2 gentle puffs of air.</p>
+                    </div>
+                </div>
+                 <div class="mt-8 text-center bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-bold text-xl mb-3">Practice the Compression Rhythm</h3>
+                    <p class="mb-4">The rate of 100-120 compressions per minute is crucial. Think of the beat of "Stayin' Alive". Click below to see a visual metronome.</p>
+                    <div id="metronome-container" class="flex justify-center items-center h-20">
+                        <div id="pulse-element" class="hidden"></div>
+                    </div>
+                    <button id="metronome-btn" class="bg-red-500 text-white font-bold py-2 px-4 rounded">Start Metronome</button>
+                </div>
+            </section>
+            
+            <section id="aed">
+                <h2 class="text-3xl font-bold mb-4 text-center">Step 4: Use an AED</h2>
+                 <div class="text-center text-gray-700 mb-6 max-w-3xl mx-auto">
+                    <p>An Automated External Defibrillator (AED) is a life-saving device that can shock the heart back into a normal rhythm. If one is available, use it immediately, as it takes priority over CPR. The device is designed to be used by anyone and will provide clear instructions.</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <h3 class="font-bold text-xl mb-4 text-center">How to Use an AED</h3>
+                    <ol class="list-decimal list-inside space-y-3">
+                        <li><span class="font-semibold">Turn it on.</span> Press the power button and listen to the voice prompts.</li>
+                        <li><span class="font-semibold">Attach the pads.</span> Expose the chest and apply the pads as shown in the diagrams on the pads themselves.</li>
+                        <li><span class="font-semibold">Let it analyze.</span> Stop CPR and ensure no one is touching the person. The AED will analyze the heart's rhythm.</li>
+                        <li><span class="font-semibold">Deliver a shock if advised.</span> If a shock is needed, the AED will tell you to press the shock button. Ensure everyone is clear before you do.</li>
+                        <li><span class="font-semibold">Resume CPR.</span> Immediately after the shock (or if no shock is advised), continue chest compressions until EMS arrives.</li>
+                    </ol>
+                </div>
+            </section>
+            
+            <section id="summary">
+                <h2 class="text-3xl font-bold mb-4 text-center">Step 5: Technique Summary & Comparison</h2>
+                <div class="text-center text-gray-700 mb-6 max-w-3xl mx-auto">
+                    <p>Understanding the key differences in CPR techniques for different age groups is vital for providing effective care. This chart provides a quick visual comparison of the most important variables. Use it to reinforce your knowledge and clarify the distinctions between each patient type.</p>
+                </div>
+                <div class="bg-white p-4 md:p-6 rounded-lg shadow-lg">
+                    <div class="chart-container">
+                        <canvas id="cpr-comparison-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        let currentPatient = 'adult';
+        let metronomeInterval = null;
+
+        function scrollToSection(id) {
+            const section = document.getElementById(id);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function selectPatient(patientType) {
+            currentPatient = patientType;
+            
+            document.querySelectorAll('.patient-selector-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`btn-${patientType}`).classList.add('active');
+
+            document.querySelectorAll('.patient-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(`content-${patientType}`).classList.remove('hidden');
+        }
+
+        document.getElementById('metronome-btn').addEventListener('click', function() {
+            const pulseElement = document.getElementById('pulse-element');
+            if (metronomeInterval) {
+                clearInterval(metronomeInterval);
+                metronomeInterval = null;
+                this.textContent = 'Start Metronome';
+                pulseElement.classList.add('hidden');
+                pulseElement.classList.remove('metronome-pulse');
+            } else {
+                this.textContent = 'Stop Metronome';
+                pulseElement.classList.remove('hidden');
+                pulseElement.classList.add('metronome-pulse');
+                metronomeInterval = setInterval(() => {}, 500);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            selectPatient('adult');
+
+            const ctx = document.getElementById('cpr-comparison-chart').getContext('2d');
+            const cprChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Compression Depth', 'Hand Technique', 'Airway Tilt', 'AED Pad Size'],
+                    datasets: [
+                        {
+                            label: 'Adult',
+                            data: [10, 10, 10, 10],
+                            backgroundColor: 'rgba(74, 144, 226, 0.7)',
+                            borderColor: 'rgba(74, 144, 226, 1)',
+                            borderWidth: 1,
+                            barPercentage: 0.6
+                        },
+                        {
+                            label: 'Child',
+                            data: [8, 5, 10, 5],
+                            backgroundColor: 'rgba(80, 227, 194, 0.7)',
+                            borderColor: 'rgba(80, 227, 194, 1)',
+                            borderWidth: 1,
+                            barPercentage: 0.6
+                        },
+                        {
+                            label: 'Infant',
+                            data: [5, 2, 5, 5],
+                            backgroundColor: 'rgba(245, 166, 35, 0.7)',
+                            borderColor: 'rgba(245, 166, 35, 1)',
+                            borderWidth: 1,
+                            barPercentage: 0.6
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            display: false,
+                            max: 12
+                        },
+                        y: {
+                           grid: {
+                                display: false
+                           }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'CPR Technique Comparison'
+                        },
+                        tooltip: {
+                           enabled: true,
+                           callbacks: {
+                               label: function(context) {
+                                   const technique = context.label;
+                                   const patient = context.dataset.label;
+                                   let detail = '';
+                                   if (technique === 'Compression Depth') {
+                                       if(patient === 'Adult') detail = 'At least 2 inches (5 cm)';
+                                       if(patient === 'Child') detail = 'About 2 inches (5 cm)';
+                                       if(patient === 'Infant') detail = 'About 1.5 inches (4 cm)';
+                                   } else if (technique === 'Hand Technique') {
+                                       if(patient === 'Adult') detail = 'Two hands, interlocked';
+                                       if(patient === 'Child') detail = 'One or two hands';
+                                       if(patient === 'Infant') detail = 'Two fingers';
+                                   } else if (technique === 'Airway Tilt') {
+                                       if(patient === 'Adult' || patient === 'Child') detail = 'Past-neutral (Head-tilt, chin-lift)';
+                                       if(patient === 'Infant') detail = 'Neutral position';
+                                   } else if (technique === 'AED Pad Size') {
+                                       if(patient === 'Adult') detail = 'Adult pads';
+                                       if(patient === 'Child' || patient === 'Infant') detail = 'Child pads (use adult if unavailable)';
+                                   }
+                                   return `${patient}: ${detail}`;
+                               }
+                           }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
